@@ -1,0 +1,133 @@
+---
+title: "My title"
+subtitle: "My subtitle if needed"
+author: 
+  - First author
+  - Another author
+thanks: "Code and data are available at: LINK."
+date: today
+date-format: long
+abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+format: pdf
+number-sections: true
+bibliography: references.bib
+---
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(tidymodels)
+library(modelsummary)
+library(nflverse)
+```
+
+# Data
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+nfl_2023 <- read_csv(here::here("data/analysis_data.csv"))
+nfl_2023_train <- nfl_2023 |>
+  filter(week<=9)
+nfl_2023_test <- nfl_2023 |>
+  filter(week>9)
+
+```
+
+
+```{r}
+#| label: tbl-model
+#| tbl-cap: "Explanatory Model of NFL Quarterback Passing EPA"
+#| echo: false
+
+
+first_model_tidymodels <-
+  linear_reg() |>
+  set_engine(engine = "lm") |>
+  fit(
+    passing_epa ~ passing_yards + sacks + interceptions,
+    data = nfl_2023_train
+  )
+
+second_model_tidymodels <-
+  linear_reg() |>
+  set_engine(engine = "lm") |>
+  fit(
+    passing_epa ~ passing_tds + sacks + attempts,
+    data = nfl_2023_train
+  )
+
+
+modelsummary(list(model_1 = first_model_tidymodels,
+                  model_2 = second_model_tidymodels))
+```
+
+```{r}
+#| echo: false
+
+predicted_results <- first_model_tidymodels |>
+  predict(new_data = nfl_2023_test) |>
+  cbind(nfl_2023_test) |>
+  select(week, recent_team, passing_epa, .pred) |>
+  arrange(week, recent_team) |>
+  rename(predicted_passing_epa = .pred)
+```
+
+
+# Model
+
+The goal of our modelling strategy is twofold. Firstly,...
+
+Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+
+## Model set-up
+
+\begin{align} 
+y_i | \mu_i, \sigma &\sim \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{3i} + \beta_4 x_{4i} + \beta_5 x_{5i}
+\end{align}
+
+where $y_i$ refers to the total expected points added on pass attempts and sacks; $\mu_i$ is the mean of the normal distribution for observation $i$, which is the predicted passing EPA; $\sigma$ is the standard deviation of the normal distribution across all quarterbacks' EPA. $x_{1i}$ to $x_{5i}$ correspond to the predictors for observation $i$, which in the context of the model would be `passing_yards`, `sacks`, `interceptions`, `passing_tds`, and `attempts`; $\beta_1$ to $\beta_5$ are the coefficients for the predictor variables.
+
+
+
+### Model justification
+
+We expect a positive relationship between the size of the wings and time spent aloft. In particular...
+
+We can use maths by including latex between dollar signs, for instance $\theta$.
+
+# Result
+```{r}
+predicted_results |>
+  ggplot(aes(x = passing_epa, y = predicted_passing_epa)) +
+  geom_point(alpha = 0.5) + 
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "blue") +
+  labs(
+    title = "Actual vs Predicted Passing EPA",
+    x = "Actual Passing EPA",
+    y = "Predicted Passing EPA"
+  ) +
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
+```
+
+
+
+# Discussion
+xxx
+
+
+\newpage
+
+
+# References
+
+
