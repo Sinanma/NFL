@@ -1,14 +1,21 @@
 ---
-title: "My title"
+title: "Predictive Models of Passing Efficiency in the NFL"
 author: 
   - Sinan Ma
-thanks: "Code and data are available at: LINK."
+thanks: "Code and data are available at: https://github.com/Sinanma/NFL.git."
 date: today
 date-format: long
 format: pdf
 number-sections: true
 bibliography: references.bib
 ---
+
+# Introduction
+
+In this essay, we examined the NFL quarterback performance, focusing on factors such as passing yards, sacks, interceptions, touchdowns, and attempts influence the expected points added (EPA) to a team's score.We used Bayesian analysis approach to analyze how quarterbacks influence the results of NFL.
+
+We focus on key performance metrics to measure quarterback contributions to the 2023 NFL regular season's expected points added (EPA). This data is drawn from comprehensive player statistics, offers insight into how these factors influence game results [@nfl_qb_stats_2023]. Code is base on book *Telling Stories with Data* [@tellingstorieswithdata] and approached by R [@citeR].
+
 
 ```{r}
 #| include: false
@@ -20,8 +27,6 @@ library(tidymodels)
 library(modelsummary)
 library(nflverse)
 ```
-
-# Data
 
 ```{r}
 #| echo: false
@@ -36,6 +41,10 @@ nfl_2023_test <- nfl_2023 |>
 
 ```
 
+# Data
+
+
+@tbl-model presents two explanatory models of NFL quarterback passing EPA, revealing different aspects of quarterback performance and their statistical significance. Model 1 demonstrates that for each unit increase in passing yards, there's a slight but significant increase in the EPA, whereas sacks and interceptions have negative impacts, as expected. Model 2 shows a strong positive relationship between passing touchdowns and EPA, but a negative coefficient for attempts, suggesting that not all attempts contribute positively to a quarterback's EPA. Notably, Model 1 has a higher R-squared value, indicating that it explains more variance in the passing EPA than Model 2. Both models show good fit as evidenced by the substantial R-squared values, but Model 1 is more efficient, with a lower AIC and BIC, implying better model parsimony. The Root Mean Square Error (RMSE) values suggest that Model 1 also has a better predictive accuracy, given its lower RMSE compared to Model 2.
 
 ```{r}
 #| label: tbl-model
@@ -75,12 +84,8 @@ predicted_results <- first_model_tidymodels |>
   rename(predicted_passing_epa = .pred)
 ```
 
-
 # Model
-
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+We selected predictors like passing yards, sacks, and touchdowns because they significantly impact a quarterback's contribution to the team's success. Our Bayesian model uses these variables to better predict game outcomes by considering both past performance and the uncertain nature of sports. This method helps us see how each factor, from touchdowns to interceptions, affects a team's scoring chances. Essentially, this approach lets us weigh the pros and cons of different quarterback actions, giving us a clearer picture of what influences game results and how teams might strategize.
 
 ## Model set-up
 
@@ -92,17 +97,9 @@ y_i | \mu_i, \sigma &\sim \text{Normal}(\mu_i, \sigma) \\
 where $y_i$ refers to the total expected points added on pass attempts and sacks; $\mu_i$ is the mean of the normal distribution for observation $i$, which is the predicted passing EPA; $\sigma$ is the standard deviation of the normal distribution across all quarterbacks' EPA. $x_{1i}$ to $x_{5i}$ correspond to the predictors for observation $i$, which in the context of the model would be `passing_yards`, `sacks`, `interceptions`, `passing_tds`, and `attempts`; $\beta_1$ to $\beta_5$ are the coefficients for the predictor variables.
 
 
-
-### Model justification
-
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
-
-We can use maths by including latex between dollar signs, for instance $\theta$.
-
-# Result
 ```{r}
 #| label: fig-result
-#| tbl-cap: "Comparison of Actual vs Predicted Passing EPA"
+#| fig-cap: "Comparison of Actual vs Predicted Passing EPA"
 #| echo: false
 
 predicted_results |>
@@ -119,16 +116,11 @@ predicted_results |>
     plot.title = element_text(hjust = 0.5)
   )
 ```
+# Result
 
-
-
-# Discussion
-xxx
-
+The scatter plot in (@fig-result) illustrates a positive correlation between actual and predicted passing EPA, signifying that our model is generally successful in mirroring the quarterbacks' performances. The bulk of the data points cluster around the diagonal line of best fit, affirming the model's accuracy, especially around the average EPA values where predictions and real outcomes converge closely. However, there is noticeable variability, particularly with extreme EPA values where the model's predictions diverge from the actual outcomes, suggesting potential areas for refinement. The symmetry in the spread of predictions around the line of best fit indicates a balanced model without inherent bias towards over- or underestimation. The model's effectiveness is thus confirmed, yet the outliers underscore opportunities for enhancing its predictive power by possibly integrating additional variables or examining the anomalies in greater depth.
 
 \newpage
-
-
 # References
 
 
