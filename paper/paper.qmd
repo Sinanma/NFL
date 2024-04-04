@@ -1,13 +1,10 @@
 ---
 title: "My title"
-subtitle: "My subtitle if needed"
 author: 
-  - First author
-  - Another author
+  - Sinan Ma
 thanks: "Code and data are available at: LINK."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -104,6 +101,10 @@ We can use maths by including latex between dollar signs, for instance $\theta$.
 
 # Result
 ```{r}
+#| label: fig-result
+#| tbl-cap: "Comparison of Actual vs Predicted Passing EPA"
+#| echo: false
+
 predicted_results |>
   ggplot(aes(x = passing_epa, y = predicted_passing_epa)) +
   geom_point(alpha = 0.5) + 
